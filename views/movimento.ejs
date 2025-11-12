@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Movimento de Estoque</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            padding: 10px;
+            border: 1px solid #ccc;
+            max-width: 400px;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+
+        .success-message {
+            color: green;
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/menu">Voltar ao Menu</a>
+    <h1>2. Movimento de Estoque</h1>
+
+    <% if (error) { %>
+        <p class="error-message">ERRO: <%= error %>
+        </p>
+        <% } %>
+            <% if (message) { %>
+                <p class="success-message">
+                    <%= message %>
+                </p>
+                <% } %>
+
+                    <form action="/movimento" method="POST">
+                        <h2>Registrar Novo Movimento</h2>
+
+                        <div class="form-row">
+                            <label for="idp">Produto:</label>
+                            <select id="idp" name="idp" required>
+                                <option value="">Selecione um Produto</option>
+                                <% produtos.forEach(p=> { %>
+                                    <option value="<%= p.idp %>">
+                                        <%= p.idp %> - <%= p.nomep %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Tipo de Movimento:</label>
+                            <input type="radio" id="entrada" name="tipo_movimento" value="ENTRADA" required>
+                            <label for="entrada" style="display:inline;">Entrada</label>
+                            <input type="radio" id="saida" name="tipo_movimento" value="SAIDA" required
+                                style="margin-left: 20px;">
+                            <label for="saida" style="display:inline;">Saída</label>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="qtd">Quantidade:</label>
+                            <input type="number" id="qtd" name="qtd" min="1" required>
+                        </div>
+
+                        <button type="submit">Registrar Movimento</button>
+                    </form>
+</body>
+
+</html>

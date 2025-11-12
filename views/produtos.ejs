@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edição de Produtos</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        form {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .form-row {
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/menu">Voltar ao Menu</a>
+    <h1>1. Edição e Cadastro de Produtos</h1>
+
+    <% if (error) { %>
+        <p class="error-message">ERRO: <%= error %>
+        </p>
+        <% } %>
+
+            <form action="/produtos" method="POST">
+                <h2>Cadastrar Novo Produto</h2>
+                <div class="form-row">
+                    <label for="nomep">Nome do Produto:</label>
+                    <input type="text" id="nomep" name="nomep" required>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+
+            <hr>
+
+            <h1>Produtos Existentes</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome do Produto</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% produtos.forEach(produto=> { %>
+                        <tr>
+                            <td>
+                                <%= produto.idp %>
+                            </td>
+                            <td>
+                                <%= produto.nomep %>
+                            </td>
+                            <td>
+                                <a href="/produtos/editar/<%= produto.idp %>">Editar</a>
+
+                                <form style="display:inline; margin-left: 10px;"
+                                    action="/produtos/excluir/<%= produto.idp %>" method="POST">
+                                    <button type="submit"
+                                        onclick="return confirm('ATENÇÃO: A exclusão remove os saldos. Confirma?');">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }); %>
+                            <% if (produtos.length===0) { %>
+                                <tr>
+                                    <td colspan="3">Nenhum produto cadastrado.</td>
+                                </tr>
+                                <% } %>
+                </tbody>
+            </table>
+</body>
+
+</html>

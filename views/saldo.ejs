@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Saldo</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/menu">Voltar ao Menu</a>
+    <h1>3. Consulta de Saldo do Estoque</h1>
+
+    <h2>Saldos Atuais</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome do Produto</th>
+                <th>Saldo Atual</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% saldos.forEach(item=> { %>
+                <tr>
+                    <td>
+                        <%= item.idp %>
+                    </td>
+                    <td>
+                        <%= item.nomep %>
+                    </td>
+                    <td>
+                        <%= parseInt(item.saldo) %>
+                    </td>
+                </tr>
+                <% }); %>
+                    <% if (saldos.length===0) { %>
+                        <tr>
+                            <td colspan="3">Nenhum saldo encontrado.</td>
+                        </tr>
+                        <% } %>
+        </tbody>
+    </table>
+</body>
+
+</html>

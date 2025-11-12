@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Prova - Menu Principal</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        .menu-options {
+            margin-top: 30px;
+        }
+
+        .menu-options a {
+            display: block;
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .menu-options a:hover {
+            background-color: #ced4da;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-form button {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Bem-vindo, <%= userName %>!</h1>
+        <form class="logout-form" action="/logout" method="POST">
+            <button type="submit">Sair (Logout)</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <h2>Opções do Sistema de Estoque</h2>
+
+    <div class="menu-options">
+        <a href="/produtos">1. Edição e Cadastro de Produtos</a>
+        <a href="/movimento">2. Movimento de Estoque (Entrada/Saída)</a>
+        <a href="/saldo">3. Consultar Saldo do Estoque</a>
+    </div>
+</body>
+
+</html>

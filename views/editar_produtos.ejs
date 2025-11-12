@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Produto</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 350px;
+        }
+
+        .form-row {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/produtos">Voltar para a Lista</a>
+    <h1>Editar Produto #<%= produto.idp %>
+    </h1>
+
+    <form action="/produtos/atualizar/<%= produto.idp %>" method="POST">
+        <div class="form-row">
+            <label for="nomep">Novo Nome do Produto:</label>
+            <input type="text" id="nomep" name="nomep" value="<%= produto.nomep %>" required>
+        </div>
+        <button type="submit">Salvar Alterações</button>
+    </form>
+</body>
+
+</html>
