@@ -74,5 +74,4 @@ Vocês estão migrando temporariamente de uma arquitetura de mercado (REST) para
 
 Essa abordagem não elimina o que vocês aprenderam; ela apenas move o foco. Seu conhecimento de **SQL** e **Node.js/Express** será usado para construir a lógica de *renderização* do HTML em vez de apenas enviar JSON.
 
-Com essa introdução, eles terão o contexto e a motivação para se engajarem rapidamente no novo projeto. Você pode começar mostrando o server.js e a rota de login para exemplificar o uso de req.session.
 
