@@ -156,7 +156,7 @@ app.get('/produtos/editar/:idp', requireLogin, async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).send('Produto não encontrado.');
         }
-        res.render('editar_produto', { produto: result.rows[0] });
+        res.render('editar_produtos', { produto: result.rows[0] });
     } catch (err) {
         console.error(err);
         res.status(500).send('Erro ao buscar produto para edição.');
