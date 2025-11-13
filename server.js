@@ -252,50 +252,69 @@ app.post("/movimento", requireLogin, async (req, res) => {
   await client.query("BEGIN");
 
   try {
-    let saldoAtualizacaoQuery;
-    let saldoNovo;
+    // 1️⃣ Buscar saldo atual e estoque mínimo do produto
+    const infoResult = await client.query(
+      `
+        SELECT s.saldo, p.estoqueminimo
+        FROM saldos s
+        JOIN produtos p ON s.idp = p.idp
+        WHERE s.idp = $1
+        FOR UPDATE
+      `,
+      [idp]
+    );
 
-    // 1. VERIFICAÇÃO DE SALDO (Apenas para SAÍDA)
-    if (tipoM === "S") {
-      const saldoResult = await client.query(
-        "SELECT saldo FROM saldos WHERE idp = $1 FOR UPDATE",
-        [idp]
-      );
-      const saldoExistente = saldoResult.rows[0]
-        ? parseInt(saldoResult.rows[0].saldo)
-        : 0;
-
-      if (quantidade > saldoExistente) {
-        await client.query("ROLLBACK"); // Desfaz tudo
-        req.session.movimentoError = `Saldo insuficiente (${saldoExistente}) para realizar a saída de ${quantidade}.`;
-        return res.redirect("/movimento");
-      }
-      // Calcula o novo saldo: Subtrai a quantidade
-      saldoNovo = saldoExistente - quantidade;
-      saldoAtualizacaoQuery =
-        "UPDATE saldos SET saldo = saldo - $1 WHERE idp = $2";
-    } else {
-      // Se for ENTRADA: Apenas soma a quantidade
-      saldoAtualizacaoQuery =
-        "UPDATE saldos SET saldo = saldo + $1 WHERE idp = $2";
+    if (infoResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      req.session.movimentoError = "Produto não encontrado.";
+      return res.redirect("/movimento");
     }
 
-    // 2. REGISTRA O MOVIMENTO na Tabela 4 (Movimento)
+    const saldoAtual = parseInt(infoResult.rows[0].saldo);
+    const estoqueMinimo = parseInt(infoResult.rows[0].estoqueminimo);
+
+    // 2️⃣ Verificação de saldo para SAÍDA
+    if (tipoM === "S") {
+      const saldoNovo = saldoAtual - quantidade;
+
+      // Se for ficar abaixo do estoque mínimo → bloqueia
+      if (saldoNovo < estoqueMinimo) {
+        await client.query("ROLLBACK");
+        req.session.movimentoError = `Saldo insuficiente. O saldo ficaria abaixo do estoque mínimo (${estoqueMinimo}).`;
+        return res.redirect("/movimento");
+      }
+
+      if (quantidade > saldoAtual) {
+        await client.query("ROLLBACK");
+        req.session.movimentoError = `Saldo atual (${saldoAtual}) insuficiente para saída de ${quantidade}.`;
+        return res.redirect("/movimento");
+      }
+
+      // Atualiza o saldo
+      await client.query(
+        "UPDATE saldos SET saldo = saldo - $1 WHERE idp = $2",
+        [quantidade, idp]
+      );
+    } else {
+      // 3️⃣ Para ENTRADA → apenas soma a quantidade
+      await client.query(
+        "UPDATE saldos SET saldo = saldo + $1 WHERE idp = $2",
+        [quantidade, idp]
+      );
+    }
+
+    // 4️⃣ Registra o movimento
     const movimentoQuery =
       "INSERT INTO movimento (idp, tipom, qtd) VALUES ($1, $2, $3)";
     await client.query(movimentoQuery, [idp, tipoM, quantidade]);
 
-    // 3. ATUALIZA O SALDO na Tabela 3 (Saldos)
-    await client.query(saldoAtualizacaoQuery, [quantidade, idp]);
-
-    // 4. Se tudo deu certo, CONFIRMA a Transação
+    // 5️⃣ Confirma a transação
     await client.query("COMMIT");
 
     req.session.movimentoMessage =
       "Movimento registrado e saldo atualizado com sucesso!";
     res.redirect("/movimento");
   } catch (err) {
-    // Se algo falhar (erro no DB, erro de FK, etc.), desfaz tudo
     await client.query("ROLLBACK");
     console.error("Erro na Transação de Movimento:", err);
     req.session.movimentoError =
