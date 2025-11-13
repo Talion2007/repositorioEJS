@@ -98,7 +98,7 @@ CREATE TABLE movimento (
     tipom CHAR(1) NOT NULL, -- 'E' (Entrada) ou 'S' (Saída)
     qtd INTEGER NOT NULL,
     data_movimento TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (idp) REFERENCES produtos(idp) ON DELETE RESTRICT
+    FOREIGN KEY (idp) REFERENCES produtos(idp)
 );
 
 -- 5. DADOS INICIAIS (Obrigatório para Teste)
