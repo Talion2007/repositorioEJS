@@ -12,8 +12,8 @@ Abra o Terminal ou o Prompt de Comando dentro do VS Code.
    Bash
 
 ```
-mkdir saep-estoque
-cd saep-estoque
+mkdir prova-estoque
+cd prova-estoque
 ```
 
 2.   
@@ -50,7 +50,7 @@ mkdir public/styles
 Ao final da Etapa 1, seu projeto deve ter a seguinte organização de arquivos:
 
 ```
-saep-estoque/
+prova-estoque/
 ├── node_modules/       
 ├── public/             
 │   └── styles/         
@@ -245,7 +245,7 @@ HTML
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SAEP - Login</title>
+    <title>PROVA - Login</title>
     <style>
         /* Estilos básicos para a prova */
         body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4;}
@@ -290,7 +290,7 @@ HTML
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SAEP - Menu Principal</title>
+    <title>PROVA - Menu Principal</title>
     <style>
         body { font-family: sans-serif; margin: 20px; }
         .menu-options { margin-top: 30px; }
