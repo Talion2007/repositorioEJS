@@ -58,6 +58,14 @@
                 <div class="form-row">
                     <label for="nomep">Nome do Produto:</label>
                     <input type="text" id="nomep" name="nomep" required>
+                    <label for="fabricante">Fabricante:</label>
+                    <input type="text" id="fabricante" name="fabricante" required>
+                    <label for="preco">Preço:</label>
+                    <input type="number" step="0.01" id="preco" name="preco" required>
+                    <label for="especificacoestecnicas">Especificações Técnicas:</label>
+                    <textarea id="especificacoestecnicas" name="especificacoestecnicas" rows="3"></textarea>
+                    <label for="estoqueminimo">Estoque Mínimo:</label>
+                    <input type="number" id="estoqueminimo" name="estoqueminimo" required>
                 </div>
                 <button type="submit">Cadastrar</button>
             </form>
@@ -71,6 +79,10 @@
                     <tr>
                         <th>ID</th>
                         <th>Nome do Produto</th>
+                        <th>Fabricante</th>
+                        <th>Preço</th>
+                        <th>Especificacoes Técnicas</th>
+                        <th>Estoque Mínimo</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -82,6 +94,17 @@
                             </td>
                             <td>
                                 <%= produto.nomep %>
+                            </td>
+                            <td>
+                                <%= produto.fabricante %>
+                            </td>
+                            <td>R$ <%= produto.preco %>
+                            </td>
+                            <td>
+                                <%= produto.especificacoestecnicas %>
+                            </td>
+                            <td>
+                                <%= produto.estoqueminimo %>
                             </td>
                             <td>
                                 <a href="/produtos/editar/<%= produto.idp %>">Editar</a>

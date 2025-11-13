@@ -9,7 +9,11 @@ CREATE TABLE usuarios (
 -- 2. Tabela Produtos
 CREATE TABLE produtos (
     idp SERIAL PRIMARY KEY,
-    nomep VARCHAR(100) NOT NULL
+    nomep VARCHAR(100) NOT NULL,
+    fabricante VARCHAR(100) NOT NULL,
+    preco DECIMAL(7, 2) NOT NULL,
+    especificacoesTecnicas TEXT,
+    estoqueMinimo INT NOT NULL
 );
 
 -- 3. Tabela Saldos
@@ -36,21 +40,45 @@ CREATE TABLE movimento (
 INSERT INTO
     usuarios (login, nome, senha)
 VALUES (
-        'aluno',
-        'Aluno Teste',
+        'correia',
+        'Correia, Viado',
         '12345'
     ),
     (
-        'professor',
-        'Professor Avaliador',
-        'prova'
+        'william',
+        'William, Paçocão',
+        '12345'
     );
 
 INSERT INTO
-    produtos (nomep)
-VALUES ('Caneta Azul'),
-    ('Caderno 10 Matérias'),
-    ('Borracha');
+    produtos (
+        nomep,
+        fabricante,
+        preco,
+        especificacoesTecnicas,
+        estoqueMinimo
+    )
+VALUES (
+        'Caneta Azul',
+        'Faber-Castell',
+        1.50,
+        'Caneta esferográfica azul, ponta média.',
+        10
+    ),
+    (
+        'Caderno',
+        'Tilibra',
+        15.00,
+        'Caderno universitário, 200 folhas, capa dura.',
+        5
+    ),
+    (
+        'Borracha',
+        'Kores',
+        0.75,
+        'Borracha branca macia para lápis.',
+        20
+    );
 
 -- Inicializa o saldo para os produtos
 INSERT INTO
