@@ -113,39 +113,34 @@ app.listen(PORT, () => {
 // --- 6. ROTAS DE PRODUTOS (CRUD) ---
 
 // Rota 6.1: LISTAR PRODUTOS (SELECT) e RENDERIZAR TELA DE CADASTRO/CONSULTA
+
+
 app.get('/produtos', requireLogin, async (req, res) => {
     try {
-        // Seleciona todos os produtos (apenas ID e Nome)
         const result = await client.query('SELECT idp, nomep FROM produtos ORDER BY idp DESC');
-
-        // Renderiza a view de produtos
-        res.render('produtos', {
+        res.render('produtos', { 
             produtos: result.rows,
-            error: req.session.produtoError || null, // Passa mensagem de erro, se houver
+            error: req.session.produtoError || null, 
         });
-        req.session.produtoError = null; // Limpa o erro
-
+        req.session.produtoError = null;
     } catch (err) {
         console.error(err);
         res.status(500).send('Erro ao listar produtos.');
     }
 });
 
-// Rota 6.2: CADASTRAR NOVO PRODUTO (INSERT)
 app.post('/produtos', requireLogin, async (req, res) => {
     const { nomep } = req.body;
-
     if (!nomep) {
         req.session.produtoError = 'O nome do produto não pode ser vazio.';
         return res.redirect('/produtos');
     }
-
     try {
-        // SQL Injection-safe: insere apenas o nomep
-        const query = 'INSERT INTO produtos (nomep) VALUES ($1)';
-        await client.query(query, [nomep]);
-
-        // Redireciona de volta para a lista principal
+        const query = 'INSERT INTO produtos (nomep) VALUES ($1) RETURNING idp';
+        const result = await client.query(query, [nomep]);
+        const newIdp = result.rows[0].idp;
+        // Inicializa o saldo do novo produto
+        await client.query('INSERT INTO saldos (idp, saldo) VALUES ($1, 0)', [newIdp]);
         res.redirect('/produtos');
     } catch (err) {
         console.error(err);
@@ -154,7 +149,6 @@ app.post('/produtos', requireLogin, async (req, res) => {
     }
 });
 
-// Rota 6.3: EXIBIR FORMULÁRIO DE EDIÇÃO (SELECT by ID)
 app.get('/produtos/editar/:idp', requireLogin, async (req, res) => {
     const { idp } = req.params;
     try {
@@ -162,25 +156,16 @@ app.get('/produtos/editar/:idp', requireLogin, async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).send('Produto não encontrado.');
         }
-
-        // RENDERIZAÇÃO SSR: Passa o produto para o EJS renderizar o formulário
-        res.render('editar_produtos', { produto: result.rows[0] });
+        res.render('editar_produto', { produto: result.rows[0] });
     } catch (err) {
         console.error(err);
         res.status(500).send('Erro ao buscar produto para edição.');
     }
 });
 
-// Rota 6.4: ATUALIZAR PRODUTO (UPDATE)
 app.post('/produtos/atualizar/:idp', requireLogin, async (req, res) => {
     const { idp } = req.params;
     const { nomep } = req.body;
-
-    if (!nomep) {
-        // Embora não seja a melhor UX, para fins de prova, a validação é simples
-        return res.status(400).send('Nome do produto não pode ser vazio.');
-    }
-
     try {
         const query = 'UPDATE produtos SET nomep = $1 WHERE idp = $2';
         await client.query(query, [nomep, idp]);
@@ -191,26 +176,16 @@ app.post('/produtos/atualizar/:idp', requireLogin, async (req, res) => {
     }
 });
 
-// Rota 6.5: EXCLUIR PRODUTO (DELETE)
 app.post('/produtos/excluir/:idp', requireLogin, async (req, res) => {
     const { idp } = req.params;
-
     try {
-        // Importante: ON DELETE CASCADE garante que a linha de Saldos relacionada será excluída,
-        // mas é mais seguro excluir manualmente para evitar problemas com outras FKs.
-
-        // 1. Tenta excluir o saldo primeiro (para manter integridade, embora o CASCADE ajude)
+        // Exclusão (o CASCADE no DB cuida do Saldo, mas esta abordagem é mais clara)
         await client.query('DELETE FROM saldos WHERE idp = $1', [idp]);
-
-        // 2. Exclui o produto
         await client.query('DELETE FROM produtos WHERE idp = $1', [idp]);
-
         res.redirect('/produtos');
     } catch (err) {
-        // NOTA: Se houver movimentos na tabela 'movimento', o DELETE RESTRICT irá falhar,
-        // o que é um comportamento correto de sistema de estoque.
         console.error(err);
-        req.session.produtoError = 'Erro ao excluir. Verifique se existem MOVIMENTOS associados a este produto.';
+        req.session.produtoError = 'Erro ao excluir. Verifique se existem MOVIMENTOS associados.';
         res.redirect('/produtos');
     }
 });
